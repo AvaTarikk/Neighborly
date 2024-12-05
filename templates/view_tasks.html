@@ -1,13 +1,24 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2>Tasks</h2>
-<ul>
-    {% for task in tasks %}
-    <li>
-        <strong>{{ task.title }}</strong> - {{ task.description }} <br>
-        Location: {{ task.location }}
-    </li>
-    {% endfor %}
-</ul>
+<h2>Available Tasks</h2>
+
+{% if tasks_distance %}
+    <ul>
+        {% for task_info in tasks_distance %}
+            <li>
+                <strong>{{ task_info.task.title }}</strong><br>
+                {{ task_info.task.description }}<br>
+                Location: {{ task_info.task.location }}<br>
+                {% if task_info.task.photo %}
+                    <img src="{{ url_for('static', filename=task_info.task.photo) }}" alt="Task Photo" style="max-width: 200px; height: auto;">
+                {% endif %}
+                <br>Distance: {{ task_info.distance }} km
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No tasks available at the moment <3.</p>
+{% endif %}
+
 {% endblock %}

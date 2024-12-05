@@ -8,7 +8,10 @@ class User(db.Model):
     name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
     tasks = db.relationship('Task', backref='owner', lazy=True)
+
 
 class Task(db.Model):
     __tablename__ = 'tasks'
@@ -16,6 +19,9 @@ class Task(db.Model):
     title = db.Column(db.String, nullable=False)
     description = db.Column(db.Text, nullable=True)
     location = db.Column(db.String, nullable=False)
-    is_completed = db.Column(db.Boolean, default=False)
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
+    photo = db.Column(db.String, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
 
