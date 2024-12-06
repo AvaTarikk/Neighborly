@@ -67,3 +67,90 @@ footer {
     bottom: 0;
     width: 98%;
 }
+
+
+.task-list-container {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+}
+
+
+.task-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.task-item {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+
+.task-photo {
+    max-width: 200px;
+    height: auto;
+    display: block;
+    margin-top: 10px;
+}
+
+
+.btn {
+    margin-top: 10px;
+}
+
+
+#chat-box {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 900px;
+    height: 400px;
+    overflow-y: auto;
+    margin: 20px auto;
+    padding: 10px;
+    background: #f9f9f9;
+}
+
+.message {
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.message.you {
+    align-items: flex-end;
+}
+
+.message.other {
+    align-items: flex-start;
+}
+
+.message-content {
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 70%;
+}
+
+.message.you .message-content {
+    background-color: #dcf8c6;
+}
+
+.message.other .message-content {
+    background-color: #e9e9eb;
+}
+
+.timestamp {
+    font-size: 0.8em;
+    color: #888;
+    margin-top: 5px;
+}
+
+.read-status {
+    font-size: 0.8em;
+    color: green;
+}

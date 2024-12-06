@@ -4,19 +4,26 @@
 <h2>Available Tasks</h2>
 
 {% if tasks_distance %}
-    <ul>
-        {% for task_info in tasks_distance %}
-            <li>
-                <strong>{{ task_info.task.title }}</strong><br>
-                {{ task_info.task.description }}<br>
-                Location: {{ task_info.task.location }}<br>
-                {% if task_info.task.photo %}
-                    <img src="{{ url_for('static', filename=task_info.task.photo) }}" alt="Task Photo" style="max-width: 200px; height: auto;">
-                {% endif %}
-                <br>Distance: {{ task_info.distance }} km
-            </li>
-        {% endfor %}
-    </ul>
+    <div class="task-list-container">
+        <ul class="task-list">
+            {% for task_info in tasks_distance %}
+                <li class="task-item">
+                    <strong>{{ task_info.task.title }}</strong><br>
+                    {{ task_info.task.description }}<br>
+                    Location: {{ task_info.task.location }}<br>
+                    
+                    {% if task_info.task.photo %}
+                        <div class="task-photo-container">
+                            <img src="{{ url_for('static', filename='uploads/' + task_info.task.photo.split('/')[-1]) }}" alt="Task Photo" class="task-photo">
+                        </div>
+                    {% endif %}
+                    
+                    <br>Distance: {{ task_info.distance }} km
+                    <a href="{{ url_for('chat', recipient_id=task_info.task.user_id) }}" class="btn btn-primary">Send a Message</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 {% else %}
     <p>No tasks available at the moment <3.</p>
 {% endif %}

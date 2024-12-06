@@ -1,6 +1,100 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2>Chat</h2>
-<p>Welcome to the chat feature! nog underdevelopment.</p>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Chat with {{ recipient.name }}</h1>
+
+    <div id="chat-box" style="max-height: 400px; overflow-y: scroll;">
+        {% for message in messages %}
+        <div class="message {{ 'you' if message.sender_id == session['user_id'] else 'other' }}">
+            <div class="message-content">
+                {{ message.message }}
+                {% if message.file %}
+                <a href="{{ url_for('static', filename=message.file.split('/')[-1]) }}" target="_blank">View File</a>
+                {% endif %}
+            </div>
+            <div class="timestamp">
+                {{ message.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}
+                {% if message.is_read and message.sender_id == session['user_id'] %}
+                <span class="read-status">(Read)</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <input id="message-input" type="text" placeholder="Type a message" autocomplete="off">
+    <input id="file-input" type="file">
+    <button id="send-button">Send</button>
+
+    <script>
+        const socket = io();
+
+        // chat joine
+        socket.emit('join', {});
+
+        // als op send button wordt geclikec message versturen
+        document.getElementById('send-button').addEventListener('click', () => {
+            const message = document.getElementById('message-input').value;
+            const fileInput = document.getElementById('file-input');
+            const recipientId = {{ recipient.id }};
+
+            if (message.trim() !== '') {
+                // check of er een file is zoja die met de bericht versturen
+                if (fileInput.files.length > 0) {
+                    const formData = new FormData();
+                    formData.append('file', fileInput.files[0]);
+
+                    fetch('/upload', {
+                        method: 'POST',
+                        body: formData
+                    }).then(response => response.json()).then(data => {
+                        if (data.file_url) {
+                            socket.emit('send_message', { recipient_id: recipientId, message, file: data.file_url });
+                        }
+                    });
+                } else {
+                    // als er geen file is alleen message sturen
+                    socket.emit('send_message', { recipient_id: recipientId, message });
+                }
+
+                // message input vak clearen na versturen ervan
+                document.getElementById('message-input').value = '';
+            }
+        });
+
+        socket.on('receive_message', (data) => {
+            const chatBox = document.getElementById('chat-box');
+            const senderName = data.sender_id === {{ session['user_id'] }} ? 'You' : "{{ recipient.name }}";
+            const fileLink = data.file ? `<a href="${data.file}" target="_blank">View File</a>` : '';
+            const messageClass = data.sender_id === {{ session['user_id'] }} ? 'you' : 'other';
+
+            // nieuwe messages aan chat box appenden
+            chatBox.innerHTML += `
+                <div class="message ${messageClass}">
+                    <div class="message-content">${data.message} ${fileLink}</div>
+                    <div class="timestamp">${data.timestamp}</div>
+                </div>
+            `;
+
+            // scherm start automatisch beneden na een nieuwe bericht, je hoeft nu niet te scrollen steeds
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+
+        // Als je chat opent kom je ook weer helemaal beneden bi jchat, dus meest recentijle message
+        window.onload = function() {
+            const chatBox = document.getElementById('chat-box');
+            chatBox.scrollTop = chatBox.scrollHeight;
+        };
+    </script>
+
+
+</body>
+</html>
 {% endblock %}

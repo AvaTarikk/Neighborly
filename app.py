@@ -2,11 +2,12 @@ import os
 import math
 import requests 
 
-from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask import Flask, flash, redirect, render_template, request, session, url_for, jsonify
 from flask_session import Session
 from flask_migrate import Migrate
 from werkzeug.security import check_password_hash, generate_password_hash
 from models import *
+from flask_socketio import SocketIO, emit, join_room
 
 app = Flask(__name__)
 
@@ -19,6 +20,7 @@ db.init_app(app)
 
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
+
 Session(app)
 
 @app.route("/")
@@ -36,7 +38,7 @@ def get_location(ip_address):
     # request versturen en response opslaan
     response = requests.get(url)
     data = response.json() # omzetten naar json format
-    
+        
     return data
 
 
@@ -106,7 +108,7 @@ def login():
         else:
             flash("Invalid login credentials.", "error")
             return redirect(url_for("login"))
-
+        
     return render_template("login.html")
 
 @app.route("/logout")
@@ -116,7 +118,7 @@ def logout():
     flash("You have been logged out.", "info")
     return redirect(url_for("index"))
 
-UPLOAD_FOLDER = "static/uploads" # file met afbeelding van users
+UPLOAD_FOLDER = "static/uploads/" # file met afbeelding van users
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"} # toegestane files
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -136,7 +138,7 @@ def allowed_file(filename):
         return False
 
     # file extensie pakken en lowercase zetten
-    ext = name_parts[1].lower()
+    ext = parts[1].lower()
 
     # Check of the extensie in de toegestane lijst zit
     check = False
@@ -153,6 +155,8 @@ def create_task():
         description = request.form.get("description")
         location = request.form.get("location")
         photo = request.files.get("photo")
+        print(f"Photo: {photo}")
+                
         
         if not title or not description or not location:
             flash("All fields are required!", "error")
@@ -164,12 +168,10 @@ def create_task():
         user_lon = current_user.longitude
         
         # Als er een foto is geupload
-        if photo and allowed_file(photo.filename):  # als extensie voldoet
-            filename = secure_filename(photo.filename)
-            photo_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        photo_path = None
+        if photo and allowed_file(photo.filename):
+            photo_path = os.path.join(app.config['UPLOAD_FOLDER'], photo.filename)
             photo.save(photo_path)
-        else:
-            photo_path = None  # als er geen foto is
             
         # aan db toevoegen met latitude en longitude van de gebruiker
         new_task = Task(
@@ -244,19 +246,96 @@ def view_tasks():
 @app.route("/profile")
 def profile():
     """Profielpagina van de huidige user"""
-    if 'user_id' not in session:
-        flash("Please log in to view your profile.", "warning")
-        return redirect(url_for('login'))
-
     user = User.query.get(session["user_id"])
     return render_template("profile.html", user=user)
 
-@app.route("/chat")
-def chat():
-    """Chatpagina voor communicatie"""
-    return render_template("chat.html")
+@app.route('/chat/<int:recipient_id>')
+def chat(recipient_id):
+    """chat pagina loaden voor specifieke hulpzoekende"""
+    recipient = User.query.get(recipient_id)
+
+    # chat history ophalen
+    user_id = session['user_id']
+    messages = Message.query.filter(
+        ((Message.sender_id == user_id) & (Message.recipient_id == recipient_id)) |
+        ((Message.sender_id == recipient_id) & (Message.recipient_id == user_id))
+    ).order_by(Message.timestamp).all()
+
+    return render_template('chat.html', recipient=recipient, messages=messages)
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    """fucntien als user een file of foto wilt delen"""
+    file = request.files.get('file')
+    if file:
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+        file.save(filepath)
+        return jsonify({'file_url': filepath})
+
+socketio = SocketIO(app)
+
+@socketio.on('send_message')
+def handle_send_message(data):
+    """Process sent messages."""
+    sender_id = session.get('user_id')
+    recipient_id = data.get('recipient_id')
+    message_tekst = data.get('message')
+    bestand = data.get('file')
+
+    # message opslaan in db
+    message = Message(
+        sender_id=sender_id,
+        recipient_id=recipient_id,
+        message=message_tekst,
+        file=bestand,
+        is_read=False
+    )
+    db.session.add(message)
+    db.session.commit()
+
+    # bericht naar ontvanger sturen
+    emit('receive_message', {
+        'sender_id': sender_id,
+        'recipient_id': recipient_id,
+        'message': message_tekst,
+        'file': bestand,
+        'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+        'is_read': False
+    }, room=f'user_{recipient_id}')
+    
+    # bericht naar verzender zelf sturen zodat hij hem zelf ook meteen in de chat kan zien
+    emit('receive_message', {
+        'sender_id': sender_id,
+        'recipient_id': recipient_id,
+        'message': message_tekst,
+        'file': bestand,
+        'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+        'is_read': False
+    }, room=f'user_{sender_id}')
+    
+@app.route('/mark_read/<int:sender_id>', methods=['POST'])
+def mark_read(sender_id):
+    """Mark messages from a specific sender as read."""
+    user_id = session.get('user_id')
+
+    # ongelezen messages ophalen en op geread zetten als session user id gelijk is aan ontvanger
+    messages = Message.query.filter_by(sender_id=sender_id, recipient_id=user_id, is_read=False).all()
+    for message in messages: # op true zetten
+        message.is_read = True
+    db.session.commit()
+
+    return jsonify({'success': True})
+
+@socketio.on('join')
+def handle_join(data):
+    """chat joinen met een bepaalde user"""
+    user_id = session.get('user_id')
+    if user_id:
+        join_room(f'user_{user_id}')
 
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True)
+    
+    socketio.run(app)
