@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Your Chats</h2>
+
+{% if chats %}
+    <div class="chat-overview">
+        {% for task_id, chat in chats.items() %}
+            <div class="task-chat">
+                <h3>Task: {{ chat.task.title }}</h3>
+                <ul>
+                    {% for participant in chat.participants %}
+                        <li>
+                            <strong>{{ participant.user.name }}</strong><br>
+                            {% if participant.last_message %}
+                                <em>Last message: {{ participant.last_message.message }}</em><br>
+                                <span>{{ participant.last_message.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                            {% else %}
+                                <em>No messages yet.</em>
+                            {% endif %}
+                            <a href="{{ url_for('chat', task_id=task_id) }}" class="btn btn-primary">View Chat</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>You have no chats yet.</p>
+{% endif %}
+
+{% endblock %}

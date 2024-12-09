@@ -153,12 +153,12 @@ def create_task():
     if request.method == "POST":
         title = request.form.get("title")
         description = request.form.get("description")
+        category = request.form.get('category')
+        urgency = request.form.get('urgency')
         location = request.form.get("location")
         photo = request.files.get("photo")
-        print(f"Photo: {photo}")
                 
-        
-        if not title or not description or not location:
+        if not title or not description or not location or not category or not urgency:
             flash("All fields are required!", "error")
             return redirect(url_for("create_task"))
 
@@ -177,6 +177,8 @@ def create_task():
         new_task = Task(
             title=title,
             description=description,
+            category=category,
+            urgency=urgency,
             location=location,
             latitude=user_lat, # Latitude van de gebruiker
             longitude=user_lon, # Longitude van de gebruiker
@@ -222,9 +224,25 @@ def view_tasks():
     current_user = User.query.get(session["user_id"])
     user_lat = current_user.latitude
     user_lon = current_user.longitude
+    
+    # filters hendelen als die er zijn
+    category_filter = request.args.get('category')
+    urgency_filter = request.args.get('urgency')
+    max_distance = request.args.get('distance', type=int)
 
-    # alle tasks ophalen uit table
-    tasks = Task.query.all()
+    # filteren
+    tasks_met_filter = Task.query
+
+    # op categore filteren als erom gevraagd is
+    if category_filter:
+        tasks_met_filter = tasks_met_filter.filter(Task.category == category_filter)
+    
+    # op urgency filteren
+    if urgency_filter:
+        tasks_met_filter = tasks_met_filter.filter(Task.urgency == urgency_filter)
+    
+    # alle tasks ophalen uit table met of zonder filters
+    tasks = tasks_met_filter.all()
 
     # lijst voor tasks en bijbehorende afstand
     tasks_distance = []
@@ -234,8 +252,12 @@ def view_tasks():
         task_lat = task.latitude
         task_lon = task.longitude
         distance = haversine(user_lat, user_lon, task_lat, task_lon)
-
-        # task en bijbehorende afstand appenden aan lijst die we gaan displayen
+    
+        # als er gefiltered is om distancen en afstand is groter dan maxdistance skip
+        if max_distance and distance > max_distance:
+            continue # scot als distance groter is dan gelievde distance
+            
+        # als er geen mac distance is of distance valt binnen max distancen task appenden aan lijst
         tasks_distance.append({
             'task': task,
             'distance': distance
@@ -248,6 +270,8 @@ def profile():
     """Profielpagina van de huidige user"""
     user = User.query.get(session["user_id"])
     return render_template("profile.html", user=user)
+
+socketio = SocketIO(app)
 
 @app.route('/chat/<int:recipient_id>')
 def chat(recipient_id):
@@ -272,8 +296,6 @@ def upload_file():
         file.save(filepath)
         return jsonify({'file_url': filepath})
 
-socketio = SocketIO(app)
-
 @socketio.on('send_message')
 def handle_send_message(data):
     """Process sent messages."""
@@ -288,7 +310,8 @@ def handle_send_message(data):
         recipient_id=recipient_id,
         message=message_tekst,
         file=bestand,
-        is_read=False
+        is_read=False,
+        task_id=task_id
     )
     db.session.add(message)
     db.session.commit()
@@ -300,7 +323,8 @@ def handle_send_message(data):
         'message': message_tekst,
         'file': bestand,
         'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
-        'is_read': False
+        'is_read': False,
+        'task_id': task_id
     }, room=f'user_{recipient_id}')
     
     # bericht naar verzender zelf sturen zodat hij hem zelf ook meteen in de chat kan zien
@@ -310,7 +334,8 @@ def handle_send_message(data):
         'message': message_tekst,
         'file': bestand,
         'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
-        'is_read': False
+        'is_read': False,
+        'task_id': task_id
     }, room=f'user_{sender_id}')
     
 @app.route('/mark_read/<int:sender_id>', methods=['POST'])
@@ -332,6 +357,38 @@ def handle_join(data):
     user_id = session.get('user_id')
     if user_id:
         join_room(f'user_{user_id}')
+        
+@app.route('/chats', methods=['GET'])
+def chats():
+    user_id = session['user_id']
+    # sql query om alle tasks en de messages daarvan te pakken waar de user in zit
+    tasks = Task.query.filter(
+        (Task.user_id == user_id) | (Task.id.in_(db.session.query(Message.task_id)
+        .filter((Message.sender_id == user_id) | (Message.recipient_id == user_id))))).all()
+
+    # chats aanmaken voor elke task en behorende deelenemers
+    chats = {}
+    for task in tasks:
+        messages = Message.query.filter_by(task_id=task.id).order_by(Message.timestamp.desc()).all()
+        chat_participants = {
+            message.sender_id if message.sender_id != user_id else message.recipient_id
+            for message in messages
+        }
+        
+        for ander in chat_participants:
+            if ander != user_id: # je wilt de andere deelnemer pakken
+                participant = User.query.get(ander)
+                if task.id not in chats: # als er nog geen chat al is voor een taak maken we eentje aan
+                    chats[task.id] = {
+                        'task': task,
+                        'participants': []
+                    }
+                chats[task.id]['participants'].append({
+                    'user': participant,
+                    'last_message': messages[0] if messages else None
+                })
+
+    return render_template('chats.html', chats=chats)
 
 if __name__ == "__main__":
     with app.app_context():

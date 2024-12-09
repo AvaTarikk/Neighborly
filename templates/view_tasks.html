@@ -3,23 +3,77 @@
 {% block content %}
 <h2>Available Tasks</h2>
 
+<!-- Filter Section -->
+<div class="filter-section">
+    <h3>Filter Tasks</h3>
+    <form action="{{ url_for('view_tasks') }}" method="GET">
+        <!-- Category Filter -->
+        <label for="category">Category:</label>
+        <select name="category" id="category">
+            <option value="">All Categories</option>
+            <option value="groceries">Groceries</option>
+            <option value="household_chores">Household chores</option>
+            <option value="car_repairs">Car repairs</option>
+            <option value="bicycle_issues">Bicycle issues</option>
+            <option value="technical_problems">Technical problems</option>
+            <option value="pet_care">Pet care</option>
+            <option value="work_related">Work-related tasks</option>
+            <option value="travel_vacation">Travel & Vacation</option>
+            <option value="health_wellness">Health & Wellness</option>
+            <option value="personal_development">Personal Development</option>
+            <option value="events_activities">Events & Activities</option>
+            <option value="gardening_tasks">Gardening tasks</option>
+            <option value="study_education">Study & Education</option>
+            <option value="finance_administration">Finance & Administration</option>
+            <option value="social_leisure">Social & Leisure</option>
+            <option value="other">Other</option>
+        </select>
+
+        <!-- Urgency Filter -->
+        <label for="urgency">Urgency:</label>
+        <select name="urgency" id="urgency">
+            <option value="">All Urgency Levels</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+        </select>
+
+        <!-- Distance Filter -->
+        <label for="distance">Max Distance (km):</label>
+        <input type="number" name="distance" id="distance" min="0" step="1" placeholder="Max Distance">
+
+        <!-- Submit Button -->
+        <button type="submit">Apply Filters</button>
+    </form>
+</div>
+
+<!-- Task List Section -->
 {% if tasks_distance %}
     <div class="task-list-container">
         <ul class="task-list">
             {% for task_info in tasks_distance %}
                 <li class="task-item">
-                    <strong>{{ task_info.task.title }}</strong><br>
-                    {{ task_info.task.description }}<br>
-                    Location: {{ task_info.task.location }}<br>
-                    
+                    <!-- Task Photo -->
                     {% if task_info.task.photo %}
-                        <div class="task-photo-container">
-                            <img src="{{ url_for('static', filename='uploads/' + task_info.task.photo.split('/')[-1]) }}" alt="Task Photo" class="task-photo">
-                        </div>
+                    <div class="task-photo-container">
+                        <img src="{{ url_for('static', filename='uploads/' + task_info.task.photo.split('/')[-1]) }}" alt="Task Photo" class="task-photo">
+                    </div>
                     {% endif %}
-                    
-                    <br>Distance: {{ task_info.distance }} km
-                    <a href="{{ url_for('chat', recipient_id=task_info.task.user_id) }}" class="btn btn-primary">Send a Message</a>
+
+                    <!-- Task Details -->
+                    <div class="task-details">
+                        <div class="task-header">
+                            <strong>{{ task_info.task.title }}</strong>
+                            <span class="task-urgency {{ task_info.task.urgency.lower() }}">{{ task_info.task.urgency }}</span>
+                        </div>
+                        <p>{{ task_info.task.description }}</p>
+                        <p>Location: {{ task_info.task.location }}</p>
+                        <p>Distance: {{ task_info.distance }} km</p>
+
+                        <div class="task-footer">
+                            <a href="{{ url_for('chat', recipient_id=task_info.task.user_id) }}" class="send-message-btn">Send a Message</a>
+                        </div>
+                    </div>
                 </li>
             {% endfor %}
         </ul>
@@ -27,5 +81,4 @@
 {% else %}
     <p>No tasks available at the moment <3.</p>
 {% endif %}
-
 {% endblock %}

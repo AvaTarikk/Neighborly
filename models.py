@@ -23,6 +23,8 @@ class Task(db.Model):
     latitude = db.Column(db.Float, nullable=True)
     longitude = db.Column(db.Float, nullable=True)
     photo = db.Column(db.String, nullable=True)
+    category = db.Column(db.String, nullable=False)
+    urgency = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
 class Message(db.Model):
@@ -34,3 +36,4 @@ class Message(db.Model):
     file = db.Column(db.String, nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     is_read = db.Column(db.Boolean, default=False)
+    task_id = db.Column(db.Integer, db.ForeignKey('tasks.id'), nullable=False)
