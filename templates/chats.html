@@ -4,29 +4,22 @@
 <h2>Your Chats</h2>
 
 {% if chats %}
-    <div class="chat-overview">
-        {% for task_id, chat in chats.items() %}
-            <div class="task-chat">
-                <h3>Task: {{ chat.task.title }}</h3>
-                <ul>
-                    {% for participant in chat.participants %}
-                        <li>
-                            <strong>{{ participant.user.name }}</strong><br>
-                            {% if participant.last_message %}
-                                <em>Last message: {{ participant.last_message.message }}</em><br>
-                                <span>{{ participant.last_message.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</span>
-                            {% else %}
-                                <em>No messages yet.</em>
-                            {% endif %}
-                            <a href="{{ url_for('chat', task_id=task_id) }}" class="btn btn-primary">View Chat</a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
+    <ul class="chat-list">
+        {% for chat in chats %}
+            <li class="chat-item">
+                <strong>Task:</strong> {{ chat.task.title }}<br>
+                <strong>Participant:</strong> {{ chat.participant.name }}<br>
+                {% if chat.last_message %}
+                    <strong>Last Message:</strong> {{ chat.last_message.message }}<br>
+                    <small>Sent on: {{ chat.last_message.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+                {% else %}
+                    <em>No messages yet</em><br>
+                {% endif %}
+                <a href="{{ url_for('chat', task_id=chat.task.id, recipient_id=chat.participant.id) }}" class="btn btn-primary">View Chat</a>
+            </li>
         {% endfor %}
-    </div>
+    </ul>
 {% else %}
     <p>You have no chats yet.</p>
 {% endif %}
-
 {% endblock %}

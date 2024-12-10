@@ -11,7 +11,9 @@ class User(db.Model):
     password = db.Column(db.String, nullable=False)
     latitude = db.Column(db.Float, nullable=True)
     longitude = db.Column(db.Float, nullable=True)
-    tasks = db.relationship('Task', backref='owner', lazy=True)
+    tasks = db.relationship('Task', backref='owner', lazy=True, foreign_keys='Task.user_id')
+    accepted_tasks = db.relationship('Task', backref='acceptor', lazy=True, foreign_keys='Task.accepted_by')
+
 
 
 class Task(db.Model):
@@ -26,6 +28,11 @@ class Task(db.Model):
     category = db.Column(db.String, nullable=False)
     urgency = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    accepted_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    status = db.Column(db.String, default='open', nullable=False)
+    messages = db.relationship('Message', backref='task', lazy=True)
+
+
 
 class Message(db.Model):
     __tablename__ = 'messages'
@@ -36,4 +43,6 @@ class Message(db.Model):
     file = db.Column(db.String, nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     is_read = db.Column(db.Boolean, default=False)
-    task_id = db.Column(db.Integer, db.ForeignKey('tasks.id'), nullable=False)
+    task_id = db.Column(db.Integer, db.ForeignKey('tasks.id'), nullable=True) # nullable true anders error als ik task wil deleten met chat history
+    sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_messages')
+    recipient = db.relationship('User', foreign_keys=[recipient_id], backref='received_messages')

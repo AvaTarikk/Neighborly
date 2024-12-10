@@ -264,6 +264,77 @@ def view_tasks():
         })
 
     return render_template("view_tasks.html", tasks_distance=tasks_distance)
+    
+@app.route('/tasks/accept/<int:task_id>', methods=['POST'])
+def accept_task(task_id):
+    """functie om taken te accepten als user zijnde"""
+    task = Task.query.get(task_id)
+    if task.status != 'open':
+        flash("Task is already closed.", "error")
+        return redirect(url_for("view_tasks"))
+
+    user_id = session['user_id']
+    task.accepted_by = user_id
+    task.status = 'accepted' # status van task op accepted zette
+    db.session.commit()
+
+    flash("Task accepted successfully!", "success")
+    return redirect(url_for("view_tasks"))
+
+
+@app.route('/tasks/complete/<int:task_id>', methods=['POST'])
+def complete_task(task_id):
+    """functie om een task als completed te marken als creator ervan"""
+    task = Task.query.get(task_id)
+    if task.status != 'accepted':
+        flash("Task must be accepted before it can be completed.", "error")
+        return redirect(url_for("my_tasks"))
+
+    task.status = 'completed' # task is klaar dus status completed
+    db.session.commit()
+
+    flash("Task marked as completed!", "success")
+    return redirect(url_for("my_tasks"))
+
+
+@app.route('/tasks/reopen/<int:task_id>', methods=['POST'])
+def reopen_task(task_id):
+    """functie om als creator een task the heropen als user niet kwam opdagen bijv"""
+    task = Task.query.get_or_404(task_id)
+    if task.status != 'accepted':
+        flash("Only accepted tasks can be reopened.", "error")
+        return redirect(url_for("my_tasks"))
+
+    task.status = 'open' # van accepted weer op open zetten
+    task.accepted_by = None
+    db.session.commit()
+
+    flash("Task has been reopened successfully.", "success")
+    return redirect(url_for("my_tasks"))
+
+
+@app.route('/tasks/delete/<int:task_id>', methods=['POST'])
+def delete_task(task_id):
+    """functie om een task te deleten als creator zijnde"""
+    task = Task.query.get(task_id)
+    if session['user_id'] != task.user_id:
+        flash("You are not authorized to delete this task.", "error")
+        return redirect(url_for("my_tasks"))
+
+    db.session.delete(task)
+    db.session.commit()
+
+    flash("Task deleted successfully.", "success")
+    return redirect(url_for("my_tasks"))
+
+@app.route('/my_tasks', methods=['GET'])
+def my_tasks():
+    user_id = session['user_id']
+    created_tasks = Task.query.filter_by(user_id=user_id).all()
+    accepted_tasks = Task.query.filter_by(accepted_by=user_id).all()
+    completed_tasks = Task.query.filter_by(accepted_by=user_id, status='completed').all()
+
+    return render_template('my_tasks.html', created_tasks=created_tasks, accepted_tasks=accepted_tasks, completed_tasks=completed_tasks)
 
 @app.route("/profile")
 def profile():
@@ -271,21 +342,17 @@ def profile():
     user = User.query.get(session["user_id"])
     return render_template("profile.html", user=user)
 
-socketio = SocketIO(app)
-
-@app.route('/chat/<int:recipient_id>')
-def chat(recipient_id):
-    """chat pagina loaden voor specifieke hulpzoekende"""
+@app.route('/chat/<int:task_id>/<int:recipient_id>')
+def chat(task_id, recipient_id):
+    user_id = session.get('user_id')
+    task = Task.query.get(task_id)
     recipient = User.query.get(recipient_id)
+    
+    # berichten ophalen
+    messages = Message.query.filter_by(task_id=task_id).order_by(Message.timestamp).all()
 
-    # chat history ophalen
-    user_id = session['user_id']
-    messages = Message.query.filter(
-        ((Message.sender_id == user_id) & (Message.recipient_id == recipient_id)) |
-        ((Message.sender_id == recipient_id) & (Message.recipient_id == user_id))
-    ).order_by(Message.timestamp).all()
+    return render_template('chat.html', task=task, recipient=recipient, messages=messages)
 
-    return render_template('chat.html', recipient=recipient, messages=messages)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -295,6 +362,9 @@ def upload_file():
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(filepath)
         return jsonify({'file_url': filepath})
+  
+  
+socketio = SocketIO(app)
 
 @socketio.on('send_message')
 def handle_send_message(data):
@@ -302,6 +372,7 @@ def handle_send_message(data):
     sender_id = session.get('user_id')
     recipient_id = data.get('recipient_id')
     message_tekst = data.get('message')
+    task_id = data.get('task_id')
     bestand = data.get('file')
 
     # message opslaan in db
@@ -360,35 +431,37 @@ def handle_join(data):
         
 @app.route('/chats', methods=['GET'])
 def chats():
-    user_id = session['user_id']
-    # sql query om alle tasks en de messages daarvan te pakken waar de user in zit
-    tasks = Task.query.filter(
-        (Task.user_id == user_id) | (Task.id.in_(db.session.query(Message.task_id)
-        .filter((Message.sender_id == user_id) | (Message.recipient_id == user_id))))).all()
+    user_id = session.get('user_id')
 
-    # chats aanmaken voor elke task en behorende deelenemers
-    chats = {}
-    for task in tasks:
+    # alle taken die met user te maken heeft filteren
+    tasks = Task.query.filter(
+        (Task.user_id == user_id) |(Task.id.in_(db.session.query(Message.task_id).filter(
+        (Message.sender_id == user_id) | (Message.recipient_id == user_id))))).all()
+
+    # chats van user bijhouden voor elke task
+    chats = []
+    for task in tasks: # loop om elke task langs te gaan
+        # berichten van een taak ophalen en orderen op tijd laatst verstuurd
         messages = Message.query.filter_by(task_id=task.id).order_by(Message.timestamp.desc()).all()
-        chat_participants = {
+
+        # caht deelnemers identificeren
+        deelnemers = {
             message.sender_id if message.sender_id != user_id else message.recipient_id
             for message in messages
         }
-        
-        for ander in chat_participants:
-            if ander != user_id: # je wilt de andere deelnemer pakken
-                participant = User.query.get(ander)
-                if task.id not in chats: # als er nog geen chat al is voor een taak maken we eentje aan
-                    chats[task.id] = {
-                        'task': task,
-                        'participants': []
-                    }
-                chats[task.id]['participants'].append({
-                    'user': participant,
-                    'last_message': messages[0] if messages else None
+
+        # Add chat entries
+        for participant_id in deelnemers:
+            if participant_id != user_id: # huidige gebruiker skippen
+                participant = User.query.get(participant_id)
+                chats.append({
+                    'task': task,
+                    'participant': participant,
+                    'last_message': messages[0] if messages else None # meest recentijle bericht
                 })
 
     return render_template('chats.html', chats=chats)
+
 
 if __name__ == "__main__":
     with app.app_context():

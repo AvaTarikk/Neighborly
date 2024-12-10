@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1>My Tasks</h1>
+
+<div class="my-tasks">
+    <h2>Tasks I Created</h2>
+    {% if created_tasks %}
+        <ul class="task-list">
+            {% for task in created_tasks %}
+                <li class="task-item">
+                    <strong>{{ task.title }}</strong><br>
+                    {{ task.description }}<br>
+                    Location: {{ task.location }}<br>
+                    Status: {{ task.status }}<br>
+
+                    <div class="task-footer">
+                        <a href="{{ url_for('view_tasks', task_id=task.id) }}" class="btn btn-primary">View Task</a>
+
+                        {% if task.status == 'open' %}
+                            <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger">Delete Task</button>
+                            </form>
+                        {% elif task.status == 'accepted' %}
+                            <form action="{{ url_for('complete_task', task_id=task.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-success">Mark as Completed</button>
+                            </form>
+                            <form action="{{ url_for('reopen_task', task_id=task.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-warning">Mark as Not Completed</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have not created any tasks.</p>
+    {% endif %}
+
+    <h2>Tasks I Accepted</h2>
+    {% if accepted_tasks %}
+        <ul class="task-list">
+            {% for task in accepted_tasks %}
+                <li class="task-item">
+                    <strong>{{ task.title }}</strong><br>
+                    {{ task.description }}<br>
+                    Location: {{ task.location }}<br>
+                    Status: {{ task.status }}<br>
+
+                    <div class="task-footer">
+                        <a href="{{ url_for('chat', task_id=task.id, recipient_id=task.user_id) }}" class="btn btn-secondary">Chat with Creator</a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have not accepted any tasks.</p>
+    {% endif %}
+
+    <h2>Completed Tasks</h2>
+    {% if completed_tasks %}
+        <ul class="task-list">
+            {% for task in completed_tasks %}
+                <li class="task-item">
+                    <strong>{{ task.title }}</strong><br>
+                    {{ task.description }}<br>
+                    Location: {{ task.location }}<br>
+                    Status: Completed<br>
+                    
+                    <p>
+                        {% if task.accepted_by == session['user_id'] %}
+                            You completed this task.
+                        {% else %}
+                            Completed by {{ task.accepted_user.name }}
+                        {% endif %}
+                    </p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No completed tasks yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
+

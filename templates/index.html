@@ -3,6 +3,57 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<h1>Welcome to Neighborly!</h1>
-<p>This is a platform to connect people who need help with those who can offer it.</p>
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <h1>Welcome to Neighborly!</h1>
+            <p class="lead">Connecting people in your community who need help with those who can offer it. Whether it's groceries, household chores, or something else — we’re here to help!</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('view_tasks') }}" class="btn btn-primary">Browse Available Tasks</a>
+                <a href="{{ url_for('create_task') }}" class="btn btn-outline">Offer Help</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="how-it-works">
+    <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="icon"><i class="fas fa-user-plus"></i></div>
+                <h3>Sign Up</h3>
+                <p>Join our community in just a few easy steps to start offering or requesting help.</p>
+            </div>
+            <div class="step">
+                <div class="icon"><i class="fas fa-hand-holding-heart"></i></div>
+                <h3>Help Others</h3>
+                <p>Make a difference by helping others with their tasks. Lend a hand and solve everyday challenges together!</p>
+            </div>
+            <div class="step">
+                <div class="icon"><i class="fas fa-handshake"></i></div>
+                <h3>Get Help</h3>
+                <p>Need a hand with a task? Get the support you need from people ready to help you out!</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="testimonials">
+    <div class="container">
+        <h2 class="section-title">What Our Users Say</h2>
+        <div class="testimonial-cards">
+            <div class="testimonial-card">
+                <p>"Neighborly helped me find someone to walk my dog when I was sick. So grateful!"</p>
+                <p><strong>Anna, Neighbor</strong></p>
+            </div>
+            <div class="testimonial-card">
+                <p>"I was able to get help with groceries during a busy time, and I even helped someone fix their bike!"</p>
+                <p><strong>John, Helper</strong></p>
+            </div>
+        </div>
+    </div>
+</section>
+
 {% endblock %}
+

@@ -1,3 +1,4 @@
+
 {% extends "layout.html" %}
 
 {% block content %}
@@ -35,6 +36,9 @@
 
     <script>
         const socket = io();
+        
+        // taskid voor specifieke chat pakken
+        const taskId = {{ task.id }};
 
         // chat joine
         socket.emit('join', {});
@@ -61,7 +65,7 @@
                     });
                 } else {
                     // als er geen file is alleen message sturen
-                    socket.emit('send_message', { recipient_id: recipientId, message });
+                    socket.emit('send_message', { recipient_id: recipientId, message, task_id: taskId });
                 }
 
                 // message input vak clearen na versturen ervan

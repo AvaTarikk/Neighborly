@@ -3,11 +3,9 @@
 {% block content %}
 <h2>Available Tasks</h2>
 
-<!-- Filter Section -->
 <div class="filter-section">
     <h3>Filter Tasks</h3>
     <form action="{{ url_for('view_tasks') }}" method="GET">
-        <!-- Category Filter -->
         <label for="category">Category:</label>
         <select name="category" id="category">
             <option value="">All Categories</option>
@@ -29,7 +27,6 @@
             <option value="other">Other</option>
         </select>
 
-        <!-- Urgency Filter -->
         <label for="urgency">Urgency:</label>
         <select name="urgency" id="urgency">
             <option value="">All Urgency Levels</option>
@@ -38,29 +35,24 @@
             <option value="high">High</option>
         </select>
 
-        <!-- Distance Filter -->
         <label for="distance">Max Distance (km):</label>
         <input type="number" name="distance" id="distance" min="0" step="1" placeholder="Max Distance">
 
-        <!-- Submit Button -->
         <button type="submit">Apply Filters</button>
     </form>
 </div>
 
-<!-- Task List Section -->
 {% if tasks_distance %}
     <div class="task-list-container">
         <ul class="task-list">
             {% for task_info in tasks_distance %}
                 <li class="task-item">
-                    <!-- Task Photo -->
                     {% if task_info.task.photo %}
                     <div class="task-photo-container">
                         <img src="{{ url_for('static', filename='uploads/' + task_info.task.photo.split('/')[-1]) }}" alt="Task Photo" class="task-photo">
                     </div>
                     {% endif %}
 
-                    <!-- Task Details -->
                     <div class="task-details">
                         <div class="task-header">
                             <strong>{{ task_info.task.title }}</strong>
@@ -71,7 +63,14 @@
                         <p>Distance: {{ task_info.distance }} km</p>
 
                         <div class="task-footer">
-                            <a href="{{ url_for('chat', recipient_id=task_info.task.user_id) }}" class="send-message-btn">Send a Message</a>
+                            {% if task_info.task.user_id != session['user_id'] %}
+                                <a href="{{ url_for('chat', recipient_id=task_info.task.user_id, task_id=task_info.task.id) }}" class="send-message-btn">Send a Message</a>
+                                {% if not task_info.task.accepted_by %}
+                                    <button onclick="acceptTask({{ task_info.task.id }})" class="btn btn-success">Accept Task</button>
+                                {% else %}
+                                    <span class="task-status">Accepted</span>
+                                {% endif %}
+                            {% endif %}
                         </div>
                     </div>
                 </li>
@@ -81,4 +80,14 @@
 {% else %}
     <p>No tasks available at the moment <3.</p>
 {% endif %}
+
+<script>
+    function acceptTask(taskId) {
+        fetch(`/tasks/accept/${taskId}`, { method: 'POST' })
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .then(() => location.reload());
+    }
+</script>
+
 {% endblock %}
