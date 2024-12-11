@@ -9,7 +9,7 @@ body {
 
 header {
     background-color: #333;
-    padding: 1rem;
+    padding: 1.5rem;
 }
 
 .navbar {
@@ -31,6 +31,17 @@ header {
 
 .navbar a:hover {
     text-decoration: underline;
+}
+
+.logo-container {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
+
+.logo {
+    max-height: 50px;
+    width: auto;
 }
 
 main {
@@ -77,8 +88,213 @@ footer {
 }
 
 
+/* stijl forum*/
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    background-color: #f5f5f5;
+}
 
-/* tasks*/
+.form-section {
+    background: white;
+    padding: 2rem 3rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+}
+
+.form-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.form-description {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.form-input {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.2s;
+}
+
+.form-input:focus {
+    border-color: #31b0d5;
+    outline: none;
+}
+
+.btn-primary {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    background-color: #31b0d5;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #1f9fc8;
+}
+
+.form-footer {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #666;
+    text-align: center;
+}
+
+.form-link {
+    color: #31b0d5;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.form-link:hover {
+    text-decoration: underline;
+}
+
+
+
+/* profielpagina*/
+.profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+}
+
+.profile-card {
+    background-color: #fff;
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    max-width: 450px;
+    width: 100%;
+    text-align: center;
+}
+
+.profile-title {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+}
+
+.profile-pic-container {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.profile-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border: 3px solid #31b0d5; /* Optional border for emphasis */
+}
+
+.profile-pic-form {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.profile-pic-form input[type="file"] {
+    display: inline-block;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.btn-upload {
+    background-color: #5bc0de;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-upload:hover {
+    background-color: #31b0d5;
+    transform: scale(1.05);
+}
+
+.profile-details {
+    text-align: left;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #555;
+}
+
+.profile-details p {
+    margin: 0.5rem 0;
+    color: #666;
+}
+
+.profile-actions {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.btn-logout {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: #d9534f;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-logout:hover {
+    background-color: #c9302c;
+    transform: scale(1.05);
+}
+
+
+
+
+/* view tasks.html */
 .task-list-container {
     display: flex;
     flex-direction: column;
@@ -100,6 +316,11 @@ footer {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     gap: 20px;
     align-items: center;
+    margin-bottom: 10px;
+}
+
+.task-item:not(:last-child) {
+    border-bottom: 1px solid #ddd;
 }
 
 .task-photo-container {
@@ -181,11 +402,20 @@ footer {
     background-color: #31b0d5;
 }
 
-.task-footer p {
-    color: #777;
+
+.accept-task-btn {
+    padding: 8px 15px;
+    background-color: #00A36C;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
     font-size: 0.9em;
 }
 
+.accept-task-btn:hover {
+    background-color: #008C5E;
+}
 
 
 /* filter */
@@ -281,4 +511,254 @@ footer {
 .read-status {
     font-size: 0.8em;
     color: green;
+}
+
+
+
+/* homepage*/
+.hero-section {
+    background: url('/static/images/herobg.png') no-repeat center center/cover;
+    color: white;
+    padding: 100px 0;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+}
+
+.hero-content h1 {
+    font-size: 4em;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.hero-content p {
+    font-size: 1.5em;
+    margin-bottom: 30px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cta-buttons .btn {
+    font-size: 1.2em;
+    padding: 12px 25px;
+    margin: 0 15px;
+    text-decoration: none;
+    border-radius: 50px;
+    transition: background-color 0.3s;
+}
+
+.cta-buttons .btn-primary {
+    background-color: #31b0d5;
+    color: white;
+}
+
+.cta-buttons .btn-primary:hover {
+    background-color: #1f9fc8;
+}
+
+.cta-buttons .btn-outline {
+    border: 2px solid #31b0d5;
+    color: #31b0d5;
+}
+
+.cta-buttons .btn-outline:hover {
+    background-color: #1f9fc8;
+    color: white;
+}
+
+/* uitleg sectie*/
+.how-it-works {
+    padding: 80px 0;
+    background-color: #f5f5f5;
+    text-align: center;
+}
+
+.section-title {
+    font-size: 2.5em;
+    margin-bottom: 50px;
+    font-weight: 700;
+}
+
+.steps {
+    display: flex;
+    justify-content: space-around;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.step {
+    background-color: white;
+    padding: 30px;
+    width: 280px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.step:hover {
+    transform: translateY(-10px);
+}
+
+.step .icon {
+    font-size: 3em;
+    color: #31b0d5;
+    margin-bottom: 20px;
+}
+
+.step h3 {
+    font-size: 1.6em;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.step p {
+    font-size: 1.1em;
+    color: #6c757d;
+}
+
+/* recenties*/
+.testimonials {
+    padding: 60px 0;
+    background-color: #FFF;
+    text-align: center;
+}
+
+.testimonial-cards {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.testimonial-card {
+    background-color: #f8f9fa;
+    padding: 30px;
+    width: 45%;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.testimonial-card p {
+    font-size: 1.1em;
+    color: #495057;
+    margin-bottom: 10px;
+}
+
+.testimonial-card strong {
+    font-size: 1.2em;
+    color: #31b0d5;
+}
+    
+    
+    
+
+
+/* my tasks.html*/
+.my-tasks {
+    width: 90%;
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.task-section {
+    margin-bottom: 40px;
+}
+
+
+.no-tasks-message {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+.task-footer .btn {
+    display: inline-block;
+    padding: 10px 15px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.task-footer .btn:last-child {
+    margin-right: 0;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+}
+
+.btn-primary {
+    background-color: #31b0d5;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #b02a37;
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: black;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.inline-form {
+    display: inline;
+}
+
+form button {
+    cursor: pointer;
+    font-size: 0.9rem;
 }

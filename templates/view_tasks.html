@@ -66,7 +66,7 @@
                             {% if task_info.task.user_id != session['user_id'] %}
                                 <a href="{{ url_for('chat', recipient_id=task_info.task.user_id, task_id=task_info.task.id) }}" class="send-message-btn">Send a Message</a>
                                 {% if not task_info.task.accepted_by %}
-                                    <button onclick="acceptTask({{ task_info.task.id }})" class="btn btn-success">Accept Task</button>
+                                    <button onclick="acceptTask({{ task_info.task.id }})" class="accept-task-btn">Accept Task</button>
                                 {% else %}
                                     <span class="task-status">Accepted</span>
                                 {% endif %}

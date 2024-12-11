@@ -1,8 +1,31 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2>Your Profile</h2>
-<p><strong>Name:</strong> {{ user.name }}</p>
-<p><strong>Email:</strong> {{ user.email }}</p>
-<a href="{{ url_for('logout') }}">Log Out</a>
+<main class="profile-container">
+    <section class="profile-card">
+        <h1 class="profile-title">Your Profile</h1>
+
+        <div class="profile-pic-container">
+            <img 
+                src="{{ url_for('static', filename='uploads/' + user.profile_pic) }}" 
+                alt="Profile Picture" 
+                class="profile-pic">
+        </div>
+
+        <div class="profile-details">
+            <p><strong>Name:</strong> {{ user.name }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+        </div>
+
+        <form action="{{ url_for('profile') }}" method="post" enctype="multipart/form-data" class="profile-pic-form">
+            <label for="profile_pic">Update Profile Picture:</label>
+            <input type="file" name="profile_pic" id="profile_pic" accept="image/*">
+            <button type="submit" class="btn btn-upload">Upload</button>
+        </form>
+
+        <div class="profile-actions">
+            <a href="{{ url_for('logout') }}" class="btn btn-logout">Log Out</a>
+        </div>
+    </section>
+</main>
 {% endblock %}

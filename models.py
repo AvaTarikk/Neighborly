@@ -9,6 +9,7 @@ class User(db.Model):
     name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
+    profile_pic = db.Column(db.String, default="default_pf.png")
     latitude = db.Column(db.Float, nullable=True)
     longitude = db.Column(db.Float, nullable=True)
     tasks = db.relationship('Task', backref='owner', lazy=True, foreign_keys='Task.user_id')

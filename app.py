@@ -8,6 +8,7 @@ from flask_migrate import Migrate
 from werkzeug.security import check_password_hash, generate_password_hash
 from models import *
 from flask_socketio import SocketIO, emit, join_room
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
@@ -86,7 +87,7 @@ def register():
         db.session.commit()
 
         flash("Account created successfully!", "success")
-        return redirect(url_for("index"))
+        return redirect(url_for("login"))
 
     return render_template("register.html")
 
@@ -336,11 +337,31 @@ def my_tasks():
 
     return render_template('my_tasks.html', created_tasks=created_tasks, accepted_tasks=accepted_tasks, completed_tasks=completed_tasks)
 
-@app.route("/profile")
+
+@app.route("/profile", methods=["GET", "POST"])
 def profile():
-    """Profielpagina van de huidige user"""
+    """profielpagina van de huidige user"""
     user = User.query.get(session["user_id"])
+    
+    # profiel foto van user
+    if request.method == "POST":
+        
+        if "profile_pic" in request.files:
+            file = request.files["profile_pic"]
+            if file and allowed_file(file.filename): # check of voldoet aan formats
+                filename = secure_filename(file.filename)
+                filepath = os.path.join("static/uploads", filename)
+                file.save(filepath)
+
+                # profil pic aan db toevoegen
+                user.profile_pic = filename
+                db.session.commit()
+                flash("Profile picture updated!", "success")
+            else:
+                flash("Invalid file type. Only images are allowed.", "error")
+    
     return render_template("profile.html", user=user)
+
 
 @app.route('/chat/<int:task_id>/<int:recipient_id>')
 def chat(task_id, recipient_id):
