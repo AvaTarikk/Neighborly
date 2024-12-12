@@ -1,25 +1,31 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2>Your Chats</h2>
+<div class="chat-container">
+    <h2 class="chat-title">Your Chats</h2>
 
-{% if chats %}
-    <ul class="chat-list">
-        {% for chat in chats %}
-            <li class="chat-item">
-                <strong>Task:</strong> {{ chat.task.title }}<br>
-                <strong>Participant:</strong> {{ chat.participant.name }}<br>
-                {% if chat.last_message %}
-                    <strong>Last Message:</strong> {{ chat.last_message.message }}<br>
-                    <small>Sent on: {{ chat.last_message.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</small>
-                {% else %}
-                    <em>No messages yet</em><br>
-                {% endif %}
-                <a href="{{ url_for('chat', task_id=chat.task.id, recipient_id=chat.participant.id) }}" class="btn btn-primary">View Chat</a>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>You have no chats yet.</p>
-{% endif %}
+    {% if chats %}
+        <ul class="chat-list">
+            {% for chat in chats %}
+                <li class="chat-item">
+                    <div class="chat-details">
+                        <p><strong>Task:</strong> {{ chat.task.title }}</p>
+                        <p><strong>Participant:</strong> {{ chat.participant.name }}</p>
+                        {% if chat.last_message %}
+                            <p><strong>Last Message:</strong> {{ chat.last_message.message }}</p>
+                            <p class="chat-timestamp">
+                                <small>Sent on: {{ chat.last_message.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+                            </p>
+                        {% else %}
+                            <p><em>No messages yet</em></p>
+                        {% endif %}
+                    </div>
+                    <a href="{{ url_for('chat', task_id=chat.task.id, recipient_id=chat.participant.id) }}" class="btn btn-primary chat-button">View Chat</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="no-chats-message">You have no chats yet.</p>
+    {% endif %}
+</div>
 {% endblock %}

@@ -280,7 +280,7 @@ def accept_task(task_id):
     db.session.commit()
 
     flash("Task accepted successfully!", "success")
-    return redirect(url_for("view_tasks"))
+    return redirect(url_for("my_tasks"))
 
 
 @app.route('/tasks/complete/<int:task_id>', methods=['POST'])
@@ -293,6 +293,8 @@ def complete_task(task_id):
 
     task.status = 'completed' # task is klaar dus status completed
     db.session.commit()
+    
+    award_points(task)
 
     flash("Task marked as completed!", "success")
     return redirect(url_for("my_tasks"))
@@ -471,7 +473,7 @@ def chats():
             for message in messages
         }
 
-        # Add chat entries
+        # chats appenden 1 voor 1
         for participant_id in deelnemers:
             if participant_id != user_id: # huidige gebruiker skippen
                 participant = User.query.get(participant_id)
@@ -482,6 +484,26 @@ def chats():
                 })
 
     return render_template('chats.html', chats=chats)
+
+def award_points(task):
+    points = 0
+    if task.urgency == 'high':
+        points = 10
+    elif task.urgency == 'medium':
+        points = 5
+    elif task.urgency == 'low':
+        points = 3
+    
+    user = User.query.get(task.accepted_by) 
+    if user:
+        user.points += points
+        user.completed_tasks += 1
+        db.session.commit()
+    
+@app.route('/leaderboard')
+def leaderboard():
+    users = User.query.order_by(User.points.desc()).limit(10).all()
+    return render_template('leaderboard.html', users=users)
 
 
 if __name__ == "__main__":

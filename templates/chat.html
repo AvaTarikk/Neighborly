@@ -30,9 +30,12 @@
         {% endfor %}
     </div>
 
-    <input id="message-input" type="text" placeholder="Type a message" autocomplete="off">
-    <input id="file-input" type="file">
-    <button id="send-button">Send</button>
+    <div class="message-input-container">
+        <input id="message-input" type="text" placeholder="Type a message" autocomplete="off" class="form-input">
+        <input id="file-input" type="file" class="form-input">
+        <button id="send-button" class="btn-primary">Send</button>
+    </div>
+
 
     <script>
         const socket = io();

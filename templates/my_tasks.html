@@ -4,7 +4,7 @@
 <h1>My Tasks</h1>
 
 <div class="my-tasks">
-    <h2>Tasks I Created</h2>
+    <h2>Created Tasks</h2>
     {% if created_tasks %}
         <ul class="task-list">
             {% for task in created_tasks %}
@@ -37,7 +37,7 @@
         <p>You have not created any tasks.</p>
     {% endif %}
 
-    <h2>Tasks I Accepted</h2>
+    <h2>Accepted Tasks</h2>
     {% if accepted_tasks %}
         <ul class="task-list">
             {% for task in accepted_tasks %}
@@ -48,7 +48,7 @@
                     Status: {{ task.status }}<br>
 
                     <div class="task-footer">
-                        <a href="{{ url_for('chat', task_id=task.id, recipient_id=task.user_id) }}" class="btn btn-secondary">Chat with Creator</a>
+                        <a href="{{ url_for('chat', task_id=task.id, recipient_id=task.user_id) }}" class="btn btn-primary">Chat with Creator</a>
                     </div>
                 </li>
             {% endfor %}
@@ -67,12 +67,13 @@
                     Location: {{ task.location }}<br>
                     Status: Completed<br>
                     
-                    <p>
+                    <div class = completed-tekst>
                         {% if task.accepted_by == session['user_id'] %}
-                            You completed this task.
+                            <p><strong>YOU completed this task.</strong><p>
                         {% else %}
-                            Completed by {{ task.accepted_user.name }}
+                            <p><strong>Completed by {{ task.accepted_user.name }}</strong><p>
                         {% endif %}
+                    </div>
                     </p>
                 </li>
             {% endfor %}

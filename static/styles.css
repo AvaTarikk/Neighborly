@@ -187,6 +187,7 @@ footer {
 
 
 
+
 /* profielpagina*/
 .profile-container {
     display: flex;
@@ -225,7 +226,7 @@ footer {
     border-radius: 50%;
     object-fit: cover;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    border: 3px solid #31b0d5; /* Optional border for emphasis */
+    border: 3px solid #31b0d5;
 }
 
 .profile-pic-form {
@@ -418,6 +419,8 @@ footer {
 }
 
 
+
+
 /* filter */
 .filter-section {
     margin-bottom: 20px;
@@ -458,6 +461,7 @@ footer {
 .filter-section button:hover {
     background-color: #31b0d5;
 }
+
 
 
 
@@ -512,6 +516,83 @@ footer {
     font-size: 0.8em;
     color: green;
 }
+
+.chat-container {
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chat-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #333;
+    text-align: center;
+}
+
+.chat-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.chat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chat-details {
+    flex-grow: 1;
+}
+
+.chat-details p {
+    margin: 0.5rem 0;
+    color: #666;
+}
+
+.chat-timestamp small {
+    font-size: 0.85rem;
+    color: #999;
+}
+
+.chat-button {
+    padding: 0.5rem 1rem;
+    background-color: #31b0d5;
+    color: #fff;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.chat-button:hover {
+    background-color: #1f9fc8;
+}
+
+.no-chats-message {
+    font-size: 1.2rem;
+    color: #666;
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.message-input-container {
+    display: flex;
+    gap: 1rem;
+    align-items: auto;
+    padding-left: 500px;
+}
+
+
 
 
 
@@ -669,8 +750,8 @@ footer {
 /* my tasks.html*/
 .my-tasks {
     width: 90%;
-    max-width: 800px;
-    margin: 0 auto;
+    max-width: 1000px;
+    margin: auto;
     background: #fff;
     padding: 20px;
     border-radius: 8px;
@@ -701,8 +782,8 @@ footer {
     transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.task-footer .btn:last-child {
-    margin-right: 0;
+.task-footer .btn {
+    margin-right: 1;
 }
 
 .btn:hover {
@@ -729,6 +810,7 @@ footer {
 
 .btn-success {
     background-color: #28a745;
+    margin-right: 1;
     color: white;
 }
 
@@ -738,7 +820,7 @@ footer {
 
 .btn-warning {
     background-color: #ffc107;
-    color: black;
+    color: white;
 }
 
 .btn-warning:hover {
@@ -758,7 +840,34 @@ footer {
     display: inline;
 }
 
+.completed-tekst strong {
+    font-size: 1.2em;
+    color: #31b0d5;
+}
 form button {
     cursor: pointer;
     font-size: 0.9rem;
+}
+
+
+
+
+
+/* leader */
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 1em;
+    text-align: left;
+}
+
+.leaderboard-table th, .leaderboard-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.leaderboard-table th {
+    background-color: #31b0d5;
+    font-weight: bold;
 }

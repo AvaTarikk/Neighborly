@@ -12,6 +12,8 @@ class User(db.Model):
     profile_pic = db.Column(db.String, default="default_pf.png")
     latitude = db.Column(db.Float, nullable=True)
     longitude = db.Column(db.Float, nullable=True)
+    points = db.Column(db.Integer, nullable=True, default=0)
+    completed_tasks = db.Column(db.Integer, nullable=True, default=0)
     tasks = db.relationship('Task', backref='owner', lazy=True, foreign_keys='Task.user_id')
     accepted_tasks = db.relationship('Task', backref='acceptor', lazy=True, foreign_keys='Task.accepted_by')
 

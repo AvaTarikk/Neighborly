@@ -46,6 +46,7 @@
     <div class="task-list-container">
         <ul class="task-list">
             {% for task_info in tasks_distance %}
+                {% if not task_info.task.completed and not task_info.task.accepted_by %}
                 <li class="task-item">
                     {% if task_info.task.photo %}
                     <div class="task-photo-container">
@@ -56,7 +57,7 @@
                     <div class="task-details">
                         <div class="task-header">
                             <strong>{{ task_info.task.title }}</strong>
-                            <span class="task-urgency {{ task_info.task.urgency.lower() }}">{{ task_info.task.urgency }}</span>
+                            <span class="task-urgency {{ task_info.task.urgency.lower() }}">Urgency: {{ task_info.task.urgency }}</span>
                         </div>
                         <p>{{ task_info.task.description }}</p>
                         <p>Location: {{ task_info.task.location }}</p>
@@ -65,15 +66,14 @@
                         <div class="task-footer">
                             {% if task_info.task.user_id != session['user_id'] %}
                                 <a href="{{ url_for('chat', recipient_id=task_info.task.user_id, task_id=task_info.task.id) }}" class="send-message-btn">Send a Message</a>
-                                {% if not task_info.task.accepted_by %}
-                                    <button onclick="acceptTask({{ task_info.task.id }})" class="accept-task-btn">Accept Task</button>
-                                {% else %}
-                                    <span class="task-status">Accepted</span>
-                                {% endif %}
+                                <form action="{{ url_for('accept_task', task_id=task_info.task.id ) }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-success">Accept Task</button>
+                                </form>
                             {% endif %}
                         </div>
                     </div>
                 </li>
+                {% endif %}
             {% endfor %}
         </ul>
     </div>
