@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="task-description-container">
+    {% if task.photo %}
+    <div class="task-photo-large">
+        <img src="{{ url_for('static', filename='uploads/' + task.photo.split('/')[-1]) }}" alt="Task Photo" class="task-photo">
+    </div>
+    {% endif %}
+
+    <div class="task-details">
+        <h2 class="task-title">{{ task.title }}</h2>
+        <ul class="task-meta">
+            <li><strong>Category:</strong> {{ task.category }}</li>
+            <li><strong>Urgency:</strong> {{ task.urgency }}</li>
+            <li><strong>Distance:</strong> {{ distance }} km</li>
+            <li><strong>Location:</strong> {{ task.location }}</li>
+        </ul>
+        <div class="task-description">
+            <h3>Description</h3>
+            <p>{{ task.description }}</p>
+        </div>
+    </div>
+
+    <div class="task-footer2">
+       {% if task.user_id != session['user_id'] %}
+            <a href="{{ url_for('chat', recipient_id=task.user_id, task_id=task.id) }}" class="send-message-btn">Send a Message</a>
+            <form action="{{ url_for('accept_task', task_id=task.id ) }}" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-success">Accept Task</button>
+            </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

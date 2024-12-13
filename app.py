@@ -174,10 +174,16 @@ def create_task():
             photo_path = os.path.join(app.config['UPLOAD_FOLDER'], photo.filename)
             photo.save(photo_path)
             
+        if len(description) > 40:
+            short_description = description[:40] + "..."
+        else:
+            short_description = description
+            
         # aan db toevoegen met latitude en longitude van de gebruiker
         new_task = Task(
             title=title,
             description=description,
+            short_description=short_description,
             category=category,
             urgency=urgency,
             location=location,
@@ -194,7 +200,6 @@ def create_task():
         return redirect(url_for("view_tasks"))
 
     return render_template("create_task.html")
-
 
 def haversine(lat1, lon1, lat2, lon2):
     """wiskunde formule om van 2 verschillende lat en lon (x, y) afstand te berekenen"""
@@ -265,6 +270,11 @@ def view_tasks():
         })
 
     return render_template("view_tasks.html", tasks_distance=tasks_distance)
+    
+@app.route('/task/<int:task_id>', methods=['GET'])
+def task_desc(task_id):
+    task = Task.query.get_or_404(task_id)
+    return render_template('task_desc.html', task=task)
     
 @app.route('/tasks/accept/<int:task_id>', methods=['POST'])
 def accept_task(task_id):

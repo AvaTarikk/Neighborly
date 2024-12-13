@@ -59,17 +59,12 @@
                             <strong>{{ task_info.task.title }}</strong>
                             <span class="task-urgency {{ task_info.task.urgency.lower() }}">Urgency: {{ task_info.task.urgency }}</span>
                         </div>
-                        <p>{{ task_info.task.description }}</p>
+                        <p>{{ task_info.task.short_description }}</p>
                         <p>Location: {{ task_info.task.location }}</p>
                         <p>Distance: {{ task_info.distance }} km</p>
 
                         <div class="task-footer">
-                            {% if task_info.task.user_id != session['user_id'] %}
-                                <a href="{{ url_for('chat', recipient_id=task_info.task.user_id, task_id=task_info.task.id) }}" class="send-message-btn">Send a Message</a>
-                                <form action="{{ url_for('accept_task', task_id=task_info.task.id ) }}" method="POST" style="display:inline;">
-                                    <button type="submit" class="btn btn-success">Accept Task</button>
-                                </form>
-                            {% endif %}
+                            <a href="{{ url_for('task_desc', task_id=task_info.task.id) }}" class="btn btn-primary">View Details</a>
                         </div>
                     </div>
                 </li>
