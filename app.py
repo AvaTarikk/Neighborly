@@ -35,7 +35,7 @@ def get_location(ip_address):
     access_key = '2d8149e7aec4a74b26cdc232702b417e'
     
     # api url maken met ip adres
-    url = f'http://api.ipstack.com/{"82.94.176.164"}?access_key={access_key}'
+    url = f'http://api.ipstack.com/{ip_address}?access_key={access_key}'
     
     # request versturen en response opslaan
     response = requests.get(url)
