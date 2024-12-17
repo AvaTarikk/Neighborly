@@ -16,6 +16,7 @@ In veel buurten is er een gebrek aan eenvoudige en toegankelijke manieren om hul
 4. Een chatfunctie toe te voegen om taakdetails te bespreken.  
 5. Een leaderboard aan te bieden dat de meest behulpzame gebruikers toont.  
 
+
 ## 🎯 **Onze doelgroep**  
 De primaire gebruikers zijn:  
 - **Ouderen**: die hulp nodig hebben bij dagelijkse taken zoals boodschappen en klusjes.  
@@ -43,7 +44,7 @@ De **'My Tasks'**-pagina biedt een overzicht van taken die de gebruiker zelf hee
 
 ### **Chatpagina**  
 De **Chatpagina** maakt directe communicatie tussen gebruikers mogelijk over specifieke taken.  
-![Chatpagina](./screenshots/chat.png)  
+![Chatpagina](./screenshots/chat.png)
 
 ### **Leaderboard**  
 De **Leaderboard**-pagina motiveert gebruikers door de meest behulpzame personen te rangschikken op basis van behaalde punten.  
@@ -88,7 +89,7 @@ flask run
 De app draait nu lokaal op: **[http://localhost:5000](http://localhost:5000)**  
 
 
-## 📚 **Resources**  
+## 📚 **Bronnenlijst**  
 
 ### **IP Stack Implementatie**  
 - **apilayer** (2023, 8 november):  
@@ -118,7 +119,3 @@ De code in `app.py` van **regel 205 t/m 225** met behulp van:
 - **Flask-WTF**: Voor formuliervalidatie.  
 - **IpStack**: Voor locatiebepaling en afstandsberekening.  
 - **Socket.IO**: Voor de real-time chatfunctie.  
-
-
-🎉 **Bedankt voor het bekijken van Neighborly!**   
-Maak de wereld van je buurt een beetje beter, taak voor taak. 🚀 
