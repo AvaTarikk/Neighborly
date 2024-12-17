@@ -16,5 +16,5 @@ Een best belangrijke beslissing in het project was het gebruik van de Haversine 
 Ik heb gekozen voor real time communicatie mogelijk te maken tussen gebruikers, zo hoeven ze niet steeds van applicatie te switchen om met een andere partij te communiceren. In de eerste fase van het project onderzocht ik alternatieven zoals traditionele HTTP-requests, maar deze waren te traag voor directe communicatie tussen twee partijen. Socket.IO biedt een efficiënte manier om berichten direct tussen gebruikers te verzenden, wat essentieel is voor de chatfunctie. Door socket.io te implementeren kan de applicatie snel reageren op user zijn invoer en is de interactie veel vloeiender en gewoon efficienter.
 
 ### 4. **Homepage**
-####**code in templates/index.html en styles.css r. 677-821**
+#### **code in templates/index.html en styles.css r. 677-821**
 Heb hier best wat moeite in de front-end gestopt om de homepage van de site aesthatic pleasing te maken en dat alles heel duidelijk is voor de user. Dus waar je naar toe moet, hoe de site in elkaar zit en hoe alles werkt.
