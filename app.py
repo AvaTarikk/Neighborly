@@ -30,11 +30,12 @@ def index():
     return render_template("index.html")
     
 def get_location(ip_address):
+    """ipadres van user omzetten naar locatie"""
     # ipstack API key
     access_key = '2d8149e7aec4a74b26cdc232702b417e'
     
     # api url maken met ip adres
-    url = f'http://api.ipstack.com/{ip_address}?access_key={access_key}'
+    url = f'http://api.ipstack.com/{"82.94.176.164"}?access_key={access_key}'
     
     # request versturen en response opslaan
     response = requests.get(url)
@@ -203,6 +204,7 @@ def create_task():
 
 def haversine(lat1, lon1, lat2, lon2):
     """wiskunde formule om van 2 verschillende lat en lon (x, y) afstand te berekenen"""
+    # bron: https://stackoverflow.com/questions/4913349/haversine-formula-in-python-bearing-and-distance-between-two-gps-points
     # omzetten van latitude en longtitude van grade naar radius
     lat1 = math.radians(lat1)
     lon1 = math.radians(lon1)
@@ -220,7 +222,7 @@ def haversine(lat1, lon1, lat2, lon2):
     # afstand berekenen
     R = 6371.0 # radius van aarde in km
     distance = R *c
-    return distance
+    return round(distance, 2)
 
 
 @app.route("/view_tasks")
@@ -464,6 +466,7 @@ def handle_join(data):
         
 @app.route('/chats', methods=['GET'])
 def chats():
+    """functie om lijst met openstaande chast te showen"""
     user_id = session.get('user_id')
 
     # alle taken die met user te maken heeft filteren
@@ -496,7 +499,9 @@ def chats():
     return render_template('chats.html', chats=chats)
 
 def award_points(task):
+    """functie om punten te geven aan users"""
     points = 0
+    # punten uitdelen op basis van urgency level
     if task.urgency == 'high':
         points = 10
     elif task.urgency == 'medium':
@@ -512,6 +517,7 @@ def award_points(task):
     
 @app.route('/leaderboard')
 def leaderboard():
+    """leaderboard op basis van punten"""
     users = User.query.order_by(User.points.desc()).limit(10).all()
     return render_template('leaderboard.html', users=users)
 

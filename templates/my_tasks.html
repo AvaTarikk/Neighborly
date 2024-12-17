@@ -10,7 +10,7 @@
             {% for task in created_tasks %}
                 <li class="task-item">
                     <strong>{{ task.title }}</strong><br>
-                    {{ task.description }}<br>
+                    {{ task.short_description }}<br>
                     Location: {{ task.location }}<br>
                     Status: {{ task.status }}<br>
 
@@ -54,7 +54,7 @@
             {% endfor %}
         </ul>
     {% else %}
-        <p>None of your tasks are accepted yet.</p>
+        <p>No accepted tasks yet.</p>
     {% endif %}
 
     <h2>Completed Tasks</h2>
