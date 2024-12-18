@@ -1,6 +1,6 @@
 # **Project: Neighborly**  
 **Van: Tarik Ulgen**
-
+**Screencast: https://youtu.be/Qy5p4_-Matk?si=77uc3_f8nqfokvfQ**
 
 ## 🚀 **Introductie**  
 **Neighborly** is een platform waarmee buurtgenoten elkaar kunnen helpen met dagelijkse taken. Gebruikers kunnen taken aanmaken en anderen uitnodigen om te helpen. Denk aan klusjes zoals boodschappen doen, het repareren van een fiets of het verzorgen van een huisdier. Gebruikers verdienen punten door taken te voltooien, waarbij urgentie het aantal punten beïnvloedt. Het doel is om gemeenschapszin te versterken en hulp laagdrempelig te maken.
